@@ -4,7 +4,6 @@ setup(
     name='smart',
     version='0.0.1',
     packages=['formula-smartflask'],
-    install_requires=[],
     url='https://github.com/smartcundo/smartflask',
     license='',
     author='SMART',
