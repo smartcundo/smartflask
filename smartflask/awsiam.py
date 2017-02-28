@@ -1,9 +1,11 @@
 from flask_script import Manager
 import boto3
-import botocore.errorfactory
+import botocore.exceptions
 import os
 import ConfigParser
 
+import logging
+logger = logging.getLogger()
 
 aws_config_file = os.path.join(os.getenv("HOME"), ".aws", "credentials")
 manager = Manager(usage="AWS management tools")
@@ -54,7 +56,7 @@ def delete_password(username):
         else:
             print("FAILED!")
 
-    except botocore.errorfactory.ClientError as e:
+    except botocore.exceptions.ClientError as e:
         print("Login Profile for User %s does not have a password [OK]" % username)
 
 
@@ -76,11 +78,15 @@ def disable(username, config_file, aws_account, all_profiles=False):
             profiles = [aws_account]
 
         for profile in profiles:
-            _aws_access_key_id = configs.get(profile, 'aws_access_key_id')
-            _aws_secret_access_key = configs.get(profile, 'aws_secret_access_key')
-            print("[AWS Account %s]" % profile)
-            delete_password(username)
-            deactivate_access_keys(username)
+            try:
+                _aws_access_key_id = configs.get(profile, 'aws_access_key_id')
+                _aws_secret_access_key = configs.get(profile, 'aws_secret_access_key')
+                print("[AWS Account %s]" % profile)
+                delete_password(username)
+                deactivate_access_keys(username)
+            except ConfigParser.NoSectionError:
+                msg = "Profile [%s] not found in %s" % (profile, config_file)
+                logger.debug(msg)
 
     except NotImplementedError as e:
         print(e.message)

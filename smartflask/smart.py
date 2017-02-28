@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import sys
 from flask_script import Manager
 from flask_script import Flask
 from flask_script import Command
@@ -9,7 +9,6 @@ from awsiam import manager as awsman
 
 
 from argparse import ArgumentParser
-
 
 
 app = Flask(__name__)
